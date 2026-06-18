@@ -22,7 +22,7 @@ const main = async () => {
   app.use(
     cors({
       origin: (origin, callback) => {
-        const allowed = (process.env.CLIENT_URL || "http://localhost:5173")
+        const allowed = (process.env.CLIENT_URL || "http://localhost:5173" || "https://nonnytech.vercel.app")
           .split(",")
           .map((o) => o.trim());
         // Allow requests with no origin (e.g. mobile apps, curl, Postman)
