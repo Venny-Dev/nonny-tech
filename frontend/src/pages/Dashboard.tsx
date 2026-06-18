@@ -112,7 +112,9 @@ export default function Dashboard() {
             {isLoading
               ? Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-4">
-                    <Skeleton className="w-full" style={{ height: `${40 + i * 15}px` } as React.CSSProperties} />
+                    <div className="w-full" style={{ height: `${40 + i * 15}px` }}>
+                      <Skeleton className="w-full h-full" />
+                    </div>
                     <Skeleton className="h-3 w-6" />
                   </div>
                 ))

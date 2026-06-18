@@ -13,7 +13,7 @@ export const getAllSales = catchAsync(async (req: Request, res: Response) => {
 
 export const getSaleById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const sale = await saleService.getById(req.params.id);
+    const sale = await saleService.getById(req.params["id"] as string);
     if (!sale) return next(new AppError("Sale not found", 404));
     res.status(200).json({ status: "success", data: sale });
   },
@@ -31,7 +31,7 @@ export const updateSaleStatus = catchAsync(
     if (!paymentStatus || !allowed.includes(paymentStatus)) {
       return next(new AppError("paymentStatus must be one of: pending, paid, returned", 400));
     }
-    const sale = await saleService.updateStatus(req.params.id, paymentStatus);
+    const sale = await saleService.updateStatus(req.params["id"] as string, paymentStatus);
     if (!sale) return next(new AppError("Sale not found", 404));
     res.status(200).json({ status: "success", data: sale });
   },
@@ -39,7 +39,7 @@ export const updateSaleStatus = catchAsync(
 
 export const deleteSale = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const sale = await saleService.delete(req.params.id);
+    const sale = await saleService.delete(req.params["id"] as string);
     if (!sale) return next(new AppError("Sale not found", 404));
     res.status(204).json({ status: "success", data: null });
   },
