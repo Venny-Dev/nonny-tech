@@ -82,10 +82,7 @@ const shopIncomingService = {
       .then((res) => res.data),
 
   deleteRecord: (id: string) =>
-    apiClient
-      .delete(`api/shop-incoming/${id}`)
-      .json<{ status: string }>()
-      .then((res) => res),
+    apiClient.delete(`api/shop-incoming/${id}`),
 
   addEntries: (id: string, input: AddEntriesInput) =>
     apiClient
@@ -100,10 +97,7 @@ const shopIncomingService = {
       .then((res) => res.data),
 
   deleteEntry: (id: string, serialNumber: string) =>
-    apiClient
-      .delete(`api/shop-incoming/${id}/entries/${serialNumber}`)
-      .json<{ status: string }>()
-      .then((res) => res),
+    apiClient.delete(`api/shop-incoming/${id}/entries/${serialNumber}`),
 
   search: (q: string) =>
     apiClient
