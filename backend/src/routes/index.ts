@@ -11,47 +11,43 @@ export function registerAPIRoutes(app: Application) {
   const authController = new AuthController();
 
   // Public Auth Routes
-  app.post("/api/auth/signup", authController.signup);
   app.post("/api/auth/login", authController.login);
-  app.post("/api/auth/forgot-password", authController.forgotPassword);
-  app.patch("/api/auth/reset-password/:token", authController.resetPassword);
-  app.patch("/api/auth/verify-email/:token", authController.verifyEmail);
+  app.get("/api/auth/verify", authController.verify);
 
   // Protected Auth Routes
   app.post("/api/auth/logout", authMiddleware, authController.logout);
-  app.get("/api/auth/me", authMiddleware, authController.getMe);
 
   // Analytics Routes
-  app.get("/api/analytics/dashboard", getDashboardAnalytics);
+  app.get("/api/analytics/dashboard", authMiddleware, getDashboardAnalytics);
 
   // Inventory Routes
-  app.get("/api/inventory", inventoryController.getAllInventory);
-  app.get("/api/inventory/available", inventoryController.getAvailableInventory);
-  app.get("/api/inventory/serial/:serialNumber", inventoryController.getInventoryBySerialNumber);
-  app.get("/api/inventory/:id", inventoryController.getInventoryById);
-  app.post("/api/inventory", inventoryController.createInventory);
-  app.patch("/api/inventory/:id", inventoryController.updateInventory);
-  app.delete("/api/inventory/:id", inventoryController.deleteInventory);
+  app.get("/api/inventory", authMiddleware, inventoryController.getAllInventory);
+  app.get("/api/inventory/available", authMiddleware, inventoryController.getAvailableInventory);
+  app.get("/api/inventory/serial/:serialNumber", authMiddleware, inventoryController.getInventoryBySerialNumber);
+  app.get("/api/inventory/:id", authMiddleware, inventoryController.getInventoryById);
+  app.post("/api/inventory", authMiddleware, inventoryController.createInventory);
+  app.patch("/api/inventory/:id", authMiddleware, inventoryController.updateInventory);
+  app.delete("/api/inventory/:id", authMiddleware, inventoryController.deleteInventory);
 
   // Sales Routes
-  app.get("/api/sales", saleController.getAllSales);
-  app.get("/api/sales/:id", saleController.getSaleById);
-  app.post("/api/sales", saleController.createSale);
-  app.patch("/api/sales/:id/status", saleController.updateSaleStatus);
-  app.delete("/api/sales/:id", saleController.deleteSale);
+  app.get("/api/sales", authMiddleware, saleController.getAllSales);
+  app.get("/api/sales/:id", authMiddleware, saleController.getSaleById);
+  app.post("/api/sales", authMiddleware, saleController.createSale);
+  app.patch("/api/sales/:id/status", authMiddleware, saleController.updateSaleStatus);
+  app.delete("/api/sales/:id", authMiddleware, saleController.deleteSale);
 
   // Parts Log Routes
-  app.get("/api/parts", partsLogController.getAllPartsLogs);
+  app.get("/api/parts", authMiddleware, partsLogController.getAllPartsLogs);
 
   // Shop Incoming Routes
-  app.get("/api/shop-incoming", shopIncomingController.getAllShopIncoming);
-  app.post("/api/shop-incoming", shopIncomingController.createShopIncoming);
-  app.get("/api/shop-incoming/search", shopIncomingController.searchAvailable);
-  app.get("/api/shop-incoming/available", shopIncomingController.getAvailable);
-  app.get("/api/shop-incoming/:id", shopIncomingController.getShopIncomingById);
-  app.patch("/api/shop-incoming/:id", shopIncomingController.updateShopIncoming);
-  app.delete("/api/shop-incoming/:id", shopIncomingController.deleteShopIncoming);
-  app.post("/api/shop-incoming/:id/entries", shopIncomingController.addEntries);
-  app.patch("/api/shop-incoming/:id/entries/:serialNumber", shopIncomingController.updateEntry);
-  app.delete("/api/shop-incoming/:id/entries/:serialNumber", shopIncomingController.deleteEntry);
+  app.get("/api/shop-incoming", authMiddleware, shopIncomingController.getAllShopIncoming);
+  app.post("/api/shop-incoming", authMiddleware, shopIncomingController.createShopIncoming);
+  app.get("/api/shop-incoming/search", authMiddleware, shopIncomingController.searchAvailable);
+  app.get("/api/shop-incoming/available", authMiddleware, shopIncomingController.getAvailable);
+  app.get("/api/shop-incoming/:id", authMiddleware, shopIncomingController.getShopIncomingById);
+  app.patch("/api/shop-incoming/:id", authMiddleware, shopIncomingController.updateShopIncoming);
+  app.delete("/api/shop-incoming/:id", authMiddleware, shopIncomingController.deleteShopIncoming);
+  app.post("/api/shop-incoming/:id/entries", authMiddleware, shopIncomingController.addEntries);
+  app.patch("/api/shop-incoming/:id/entries/:serialNumber", authMiddleware, shopIncomingController.updateEntry);
+  app.delete("/api/shop-incoming/:id/entries/:serialNumber", authMiddleware, shopIncomingController.deleteEntry);
 }

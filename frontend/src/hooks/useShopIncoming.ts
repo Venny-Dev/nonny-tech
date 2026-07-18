@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import shopIncomingService, {
   type CreateShopIncomingInput,
@@ -6,17 +7,42 @@ import shopIncomingService, {
 } from '../services/shopIncomingService'
 
 const KEYS = {
-  all: ['shopIncoming'] as const,
+  all: (page: number, limit: number) => ['shopIncoming', { page, limit }] as const,
   detail: (id: string) => ['shopIncoming', id] as const,
   search: (q: string) => ['shopIncoming', 'search', q] as const,
 }
 
-export function useShopIncoming() {
+export function useShopIncoming(page: number = 1, limit: number = 10) {
   const { data, isLoading } = useQuery({
-    queryKey: KEYS.all,
-    queryFn: () => shopIncomingService.getAll(),
+    queryKey: KEYS.all(page, limit),
+    queryFn: () => shopIncomingService.getAll(page, limit),
   })
-  return { records: data ?? [], isLoading }
+  return {
+    records: data?.records ?? [],
+    total: data?.total ?? 0,
+    totalPages: data?.totalPages ?? 0,
+    page: data?.page ?? page,
+    limit: data?.limit ?? limit,
+    isLoading,
+  }
+}
+
+export function useShopIncomingPagination(initialPage: number = 1, initialLimit: number = 10) {
+  const [page, setPage] = useState(initialPage)
+  const [limit] = useState(initialLimit)
+  const info = useShopIncoming(page, limit)
+
+  const goToPage = useCallback((p: number) => {
+    setPage(p)
+  }, [])
+
+  return {
+    ...info,
+    page,
+    goToPage,
+    hasNext: page < info.totalPages,
+    hasPrev: page > 1,
+  }
 }
 
 export function useShopIncomingById(id: string) {
@@ -33,7 +59,7 @@ export function useCreateShopIncoming() {
   const { mutate, isPending } = useMutation({
     mutationFn: (data: CreateShopIncomingInput) => shopIncomingService.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ['shopIncoming'] })
     },
   })
   return { createRecord: mutate, isCreating: isPending }
@@ -45,7 +71,7 @@ export function useUpdateShopIncoming() {
     mutationFn: ({ id, data }: { id: string; data: Partial<CreateShopIncomingInput> }) =>
       shopIncomingService.update(id, data),
     onSuccess: (_result, { id }) => {
-      queryClient.invalidateQueries({ queryKey: KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ['shopIncoming'] })
       queryClient.invalidateQueries({ queryKey: KEYS.detail(id) })
     },
   })
@@ -57,7 +83,7 @@ export function useDeleteShopIncoming() {
   const { mutate, isPending } = useMutation({
     mutationFn: (id: string) => shopIncomingService.deleteRecord(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ['shopIncoming'] })
     },
   })
   return { deleteRecord: mutate, isDeleting: isPending }
@@ -70,7 +96,7 @@ export function useAddEntries() {
       shopIncomingService.addEntries(id, { entries }),
     onSuccess: (_result, { id }) => {
       queryClient.invalidateQueries({ queryKey: KEYS.detail(id) })
-      queryClient.invalidateQueries({ queryKey: KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ['shopIncoming'] })
     },
   })
   return { addEntries: mutate, isAdding: isPending }
@@ -102,7 +128,7 @@ export function useDeleteEntry() {
       shopIncomingService.deleteEntry(id, serialNumber),
     onSuccess: (_result, { id }) => {
       queryClient.invalidateQueries({ queryKey: KEYS.detail(id) })
-      queryClient.invalidateQueries({ queryKey: KEYS.all })
+      queryClient.invalidateQueries({ queryKey: ['shopIncoming'] })
     },
   })
   return { deleteEntry: mutate, isDeleting: isPending }

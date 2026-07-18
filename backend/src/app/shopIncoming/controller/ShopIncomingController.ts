@@ -6,9 +6,11 @@ import AppError from "../../../utils/AppError.js";
 const service = new ShopIncomingService();
 
 export const getAllShopIncoming = catchAsync(
-  async (_req: Request, res: Response) => {
-    const records = await service.getAll();
-    res.status(200).json({ status: "success", data: records });
+  async (req: Request, res: Response) => {
+    const page = parseInt(req.query["page"] as string, 10) || 1;
+    const limit = parseInt(req.query["limit"] as string, 10) || 10;
+    const result = await service.getAll(page, limit);
+    res.status(200).json({ status: "success", ...result });
   },
 );
 

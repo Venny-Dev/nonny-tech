@@ -22,9 +22,19 @@ function withCounts(record: IShopIncomingRecord): IShopIncomingRecord & WithCoun
 }
 
 export class ShopIncomingService {
-  async getAll() {
-    const records = await ShopIncoming.find().sort({ createdAt: -1 });
-    return records.map(withCounts);
+  async getAll(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    const [records, total] = await Promise.all([
+      ShopIncoming.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+      ShopIncoming.countDocuments(),
+    ]);
+    return {
+      records: records.map(withCounts),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async getById(id: string) {

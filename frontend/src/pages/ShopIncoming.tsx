@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { useShopIncoming, useDeleteShopIncoming } from '../hooks/useShopIncoming'
+import { useShopIncomingPagination, useDeleteShopIncoming } from '../hooks/useShopIncoming'
 import ShopIncomingModal from '../components/ShopIncomingModal'
 import AddSerialModal from '../components/AddSerialModal'
 import {
@@ -23,7 +23,8 @@ export default function ShopIncoming() {
   const [fillSlotsRecord, setFillSlotsRecord] = useState<ShopIncomingRecord | null>(null)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
-  const { records, isLoading } = useShopIncoming()
+  const { records, isLoading, total, totalPages, page, goToPage, hasNext, hasPrev } =
+    useShopIncomingPagination()
   const { deleteRecord, isDeleting } = useDeleteShopIncoming()
 
   const filtered = records.filter((r) => {
@@ -36,7 +37,6 @@ export default function ShopIncoming() {
     )
   })
 
-  const totalRecords = records.length
   const totalUnits = records.reduce((sum, r) => sum + r.quantity, 0)
   const totalPendingSlots = records.reduce((sum, r) => sum + r.pendingSlots, 0)
   const totalAvailable = records.reduce((sum, r) => sum + r.availableCount, 0)
@@ -77,7 +77,7 @@ export default function ShopIncoming() {
           {
             icon: 'inventory_2',
             label: 'Total Records',
-            value: totalRecords,
+            value: total,
             iconBg: 'bg-primary/10',
             iconColor: 'text-primary',
           },
@@ -302,10 +302,61 @@ export default function ShopIncoming() {
           )}
         </div>
 
-        <div className="flex items-center px-5 py-4 border-t border-outline-variant/20 text-xs text-on-surface-variant">
+        {/* Pagination */}
+        <div className="flex items-center justify-between px-5 py-4 border-t border-outline-variant/20 text-xs text-on-surface-variant">
           <span>
-            Showing {filtered.length} of {records.length} records
+            Showing {filtered.length} of {total} records
           </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => goToPage(page - 1)}
+              disabled={!hasPrev}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
+                         disabled:opacity-30 disabled:cursor-not-allowed
+                         hover:bg-surface-container transition-all"
+            >
+              <span className="material-symbols-outlined text-base">chevron_left</span>
+              Prev
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                // Show pages around the current page
+                let pageNum: number
+                if (totalPages <= 5) {
+                  pageNum = i + 1
+                } else if (page <= 3) {
+                  pageNum = i + 1
+                } else if (page >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i
+                } else {
+                  pageNum = page - 2 + i
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => goToPage(pageNum)}
+                    className={`min-w-[32px] h-8 rounded-lg text-sm font-semibold transition-all
+                      ${pageNum === page
+                        ? 'bg-primary text-on-primary shadow-sm'
+                        : 'hover:bg-surface-container text-on-surface-variant'
+                      }`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+            </div>
+            <button
+              onClick={() => goToPage(page + 1)}
+              disabled={!hasNext}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
+                         disabled:opacity-30 disabled:cursor-not-allowed
+                         hover:bg-surface-container transition-all"
+            >
+              Next
+              <span className="material-symbols-outlined text-base">chevron_right</span>
+            </button>
+          </div>
         </div>
       </div>
 

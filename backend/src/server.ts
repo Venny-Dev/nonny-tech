@@ -8,9 +8,35 @@ import { createMongooseConnection } from "./database/mongooseConnection.js";
 import { registerAPIRoutes } from "./routes/index.js";
 import globalErrorHandler from "./middleware/errorController.js";
 import AppError from "./utils/AppError.js";
+import User from "./app/auth/models/User.js";
+
+const SEED_PASSWORD = process.env.APP_PASSWORD 
+const SEED_EMAIL = process.env.APP_EMAIL 
+
+async function seedAdminUser() {
+  // console.log(SEED_EMAIL, SEED_PASSWORD);
+  try {
+    const existing = await User.findOne({ email: SEED_EMAIL });
+    // console.log(existing);
+    if (!existing) {
+      await User.create({
+        email: SEED_EMAIL,
+        password: SEED_PASSWORD,
+        passwordConfirm: SEED_PASSWORD,
+        firstName: "Admin",
+        lastName: "NonnyTech",
+        isVerified: true,
+      });
+      console.log(`✅ Default admin user seeded (${SEED_EMAIL})`);
+    }
+  } catch (err) {
+    console.error("⚠️ Could not seed admin user:", (err as Error).message);
+  }
+}
 
 const main = async () => {
   await createMongooseConnection();
+  await seedAdminUser();
 
   const app = express();
 

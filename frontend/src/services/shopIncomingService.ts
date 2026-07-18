@@ -8,6 +8,14 @@ export interface ISerialNumberEntry {
   dateSold: string | null
 }
 
+export interface PaginatedResult {
+  records: ShopIncomingRecord[]
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
 export interface ShopIncomingRecord {
   _id: string
   modelNumber: string
@@ -57,11 +65,11 @@ export interface TypeaheadResult {
 }
 
 const shopIncomingService = {
-  getAll: () =>
+  getAll: (page: number = 1, limit: number = 10) =>
     apiClient
-      .get('api/shop-incoming')
-      .json<{ status: string; data: ShopIncomingRecord[] }>()
-      .then((res) => res.data),
+      .get('api/shop-incoming', { searchParams: { page, limit } })
+      .json<{ status: string } & PaginatedResult>()
+      .then((res) => res),
 
   getById: (id: string) =>
     apiClient
