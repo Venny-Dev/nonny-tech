@@ -23,10 +23,11 @@ export class AuthController {
       }
 
       const token = this.authService.signToken(user._id.toString());
+      const isProduction = process.env.NODE_ENV === "production";
       res.cookie("authToken", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
@@ -71,9 +72,12 @@ export class AuthController {
   );
 
   logout = (_req: Request, res: Response) => {
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("authToken", "loggedout", {
       expires: new Date(Date.now() + 10 * 1000),
       httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
     });
     res.status(200).json({ status: "success" });
   };
