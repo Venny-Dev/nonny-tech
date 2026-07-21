@@ -27,6 +27,8 @@ const colorPalettes = [
   },
 ]
 
+import { Icon } from '../components/ui/Icon'
+
 const typeSamples = [
   { role: 'Headline', font: 'Manrope', fontClass: 'font-headline' },
   { role: 'Body', font: 'Inter', fontClass: 'font-body' },
@@ -110,13 +112,13 @@ export default function DesignSystem() {
           {/* Icon buttons */}
           <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex items-center justify-around">
             <button className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
-              <span className="material-symbols-outlined text-xl">home</span>
+              <Icon name="home" size={20} />
             </button>
             <button className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
-              <span className="material-symbols-outlined text-xl">search</span>
+              <Icon name="search" size={20} />
             </button>
             <button className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
-              <span className="material-symbols-outlined text-xl">person</span>
+              <Icon name="person" size={20} />
             </button>
           </div>
         </div>
@@ -126,9 +128,7 @@ export default function DesignSystem() {
           {/* Search input */}
           <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl">
-                search
-              </span>
+              <Icon name="search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
               <input
                 type="text"
                 placeholder="Search"
@@ -140,10 +140,10 @@ export default function DesignSystem() {
           {/* Label chips */}
           <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex items-center gap-3 flex-wrap">
             <button className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-xl">edit</span>
+              <Icon name="edit" size={20} />
             </button>
             <button className="flex items-center gap-2 bg-primary-container text-on-primary-container px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-base">edit</span>
+              <Icon name="edit" size={16} />
               Label
             </button>
           </div>
@@ -151,16 +151,16 @@ export default function DesignSystem() {
           {/* FAB row */}
           <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm flex items-center justify-around flex-1">
             <button className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-lg hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined">build</span>
+              <Icon name="build" />
             </button>
             <button className="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-lg hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined">hub</span>
+              <Icon name="hub" />
             </button>
             <button className="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container shadow-lg hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined">pentagon</span>
+              <Icon name="pentagon" />
             </button>
             <button className="w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-on-error-container shadow-lg hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined">delete</span>
+              <Icon name="delete" />
             </button>
           </div>
         </div>

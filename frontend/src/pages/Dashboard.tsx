@@ -1,4 +1,5 @@
 import { useDashboard } from '../hooks/useAnalytics'
+import { Icon } from '../components/ui/Icon'
 
 function Skeleton({ className }: { className: string }) {
   return <div className={`animate-pulse rounded-lg bg-surface-container-high ${className}`} />
@@ -38,7 +39,7 @@ export default function Dashboard() {
         <div className="bg-surface-container-lowest p-6 rounded-xl hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-primary/10 rounded-lg">
-              <span className="material-symbols-outlined text-primary">trending_up</span>
+              <Icon name="trending_up" className="text-primary" />
             </div>
           </div>
           <p className="text-on-surface-variant text-sm font-medium mb-1">Total Sales</p>
@@ -53,7 +54,7 @@ export default function Dashboard() {
         <div className="bg-surface-container-lowest p-6 rounded-xl hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-secondary-container rounded-lg">
-              <span className="material-symbols-outlined text-on-secondary-container">payments</span>
+              <Icon name="payments" className="text-on-secondary-container" />
             </div>
           </div>
           <p className="text-on-surface-variant text-sm font-medium mb-1">Revenue</p>
@@ -70,7 +71,7 @@ export default function Dashboard() {
         <div className="bg-surface-container-lowest p-6 rounded-xl hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-tertiary-container rounded-lg">
-              <span className="material-symbols-outlined text-on-tertiary-container">inventory</span>
+              <Icon name="inventory" className="text-on-tertiary-container" />
             </div>
           </div>
           <p className="text-on-surface-variant text-sm font-medium mb-1">Items in Stock</p>
@@ -85,7 +86,7 @@ export default function Dashboard() {
         <div className="bg-error-container/10 border border-error/5 p-6 rounded-xl hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
           <div className="flex justify-between items-start mb-4">
             <div className="p-2 bg-error-container rounded-lg">
-              <span className="material-symbols-outlined text-on-error-container">warning</span>
+              <Icon name="warning" className="text-on-error-container" />
             </div>
             {!isLoading && (d?.lowStockCount ?? 0) > 0 && (
               <span className="text-xs font-bold text-error">Action Required</span>
@@ -167,9 +168,7 @@ export default function Dashboard() {
                     className="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-surface-container-low transition-all"
                   >
                     <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${sale.paymentStatus === 'paid' ? 'bg-emerald-50' : 'bg-error-container/20'}`}>
-                      <span className={`material-symbols-outlined text-lg ${sale.paymentStatus === 'paid' ? 'text-emerald-600' : 'text-error'}`}>
-                        {sale.paymentStatus === 'paid' ? 'sell' : 'undo'}
-                      </span>
+                      <Icon name={sale.paymentStatus === 'paid' ? 'sell' : 'undo'} size={18} className={sale.paymentStatus === 'paid' ? 'text-emerald-600' : 'text-error'} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="block text-sm font-bold truncate">{sale.name}</span>

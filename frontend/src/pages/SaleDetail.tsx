@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/Icon'
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-NG', {
@@ -71,7 +72,7 @@ export default function SaleDetail() {
   if (isLoading) {
     return (
       <div className="p-6 lg:p-8 flex items-center justify-center py-32 text-on-surface-variant gap-2">
-        <span className="material-symbols-outlined animate-spin">progress_activity</span>
+        <Icon name="progress_activity" className="animate-spin" />
         Loading sale...
       </div>
     )
@@ -84,11 +85,11 @@ export default function SaleDetail() {
           to="/sales"
           className="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6"
         >
-          <span className="material-symbols-outlined text-base">arrow_back</span>
+          <Icon name="arrow_back" size={16} />
           Back to Sales
         </Link>
         <div className="flex flex-col items-center justify-center py-24 text-on-surface-variant">
-          <span className="material-symbols-outlined text-5xl mb-3 opacity-30">receipt_long</span>
+          <Icon name="receipt_long" size={48} className="mb-3 opacity-30" />
           <p className="text-lg font-semibold">Sale not found</p>
           <p className="text-sm mt-1">This sale record may have been deleted or doesn't exist.</p>
         </div>
@@ -102,8 +103,7 @@ export default function SaleDetail() {
       <Link
         to="/sales"
         className="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6"
-      >
-        <span className="material-symbols-outlined text-base">arrow_back</span>
+      >            <Icon name="arrow_back" size={16} />
         Back to Sales
       </Link>
 
@@ -122,7 +122,7 @@ export default function SaleDetail() {
         {/* Card header */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-outline-variant/20 bg-surface-container-low/40">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary">receipt_long</span>
+            <Icon name="receipt_long" className="text-primary" />
           </div>
           <div>
             <p className="font-semibold text-on-surface">{sale.customerName}</p>
@@ -176,7 +176,7 @@ export default function SaleDetail() {
           <DetailRow label="Charger Qty">
             {sale.chargerQuantity > 0 ? (
               <span className="inline-flex items-center gap-1 text-emerald-700 font-medium">
-                <span className="material-symbols-outlined text-sm">check</span>
+                <Icon name="check" size={14} />
                 {sale.chargerQuantity}
               </span>
             ) : (
@@ -241,7 +241,7 @@ export default function SaleDetail() {
                   className="text-on-surface-variant hover:text-primary transition-colors"
                   title="Edit status"
                 >
-                  <span className="material-symbols-outlined text-base">edit</span>
+                  <Icon name="edit" size={16} />
                 </button>
               </div>
             )}
@@ -257,7 +257,7 @@ export default function SaleDetail() {
                 to={`/shop-incoming/${sale.inventoryItem}`}
                 className="inline-flex items-center gap-1.5 text-primary font-medium hover:underline text-sm"
               >
-                <span className="material-symbols-outlined text-base">open_in_new</span>
+                <Icon name="open_in_new" size={16} />
                 View Stock Record
               </Link>
             </DetailRow>

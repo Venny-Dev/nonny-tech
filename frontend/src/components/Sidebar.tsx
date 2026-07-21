@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useSidebar } from './SidebarContext'
+import { Icon } from './ui/Icon'
 
 const navItems = [
   { icon: 'dashboard', label: 'Dashboard', to: '/dashboard' },
@@ -27,7 +28,7 @@ export default function Sidebar() {
           className="lg:hidden text-on-surface-variant hover:text-on-surface transition-colors"
           aria-label="Close sidebar"
         >
-          <span className="material-symbols-outlined">close</span>
+          <Icon name="close" />
         </button>
       </div>
 
@@ -45,7 +46,7 @@ export default function Sidebar() {
               }`
             }
           >
-            <span className="material-symbols-outlined">{icon}</span>
+            <Icon name={icon} />
             <span>{label}</span>
           </NavLink>
         ))}
@@ -53,7 +54,7 @@ export default function Sidebar() {
 
       <div className="mt-auto flex flex-col gap-y-1">
         <button className="bg-primary text-on-primary mb-4 py-3 px-4 rounded-lg font-bold flex items-center justify-center gap-2 shadow-lg hover:scale-[1.02] transition-all text-sm">
-          <span className="material-symbols-outlined text-sm">add</span>
+          <Icon name="add" size={14} />
           Quick Report
         </button>
         {[
@@ -72,7 +73,7 @@ export default function Sidebar() {
               }`
             }
           >
-            <span className="material-symbols-outlined">{icon}</span>
+            <Icon name={icon} />
             <span>{label}</span>
           </NavLink>
         ))}

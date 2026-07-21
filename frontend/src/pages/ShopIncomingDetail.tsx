@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useShopIncomingById } from '../hooks/useShopIncoming'
 import { useSalesBySerialNumber } from '../hooks/useSales'
 import type { ISerialNumberEntry } from '../services/shopIncomingService'
+import { Icon } from '../components/ui/Icon'
 
 function ConditionBadges({ condition }: { condition: string[] }) {
   if (condition.length === 1 && condition[0].toLowerCase() === 'ok') {
@@ -76,7 +77,7 @@ export default function ShopIncomingDetail() {
   if (isLoading) {
     return (
       <div className="p-6 lg:p-8 flex items-center justify-center py-32 text-on-surface-variant gap-2">
-        <span className="material-symbols-outlined animate-spin">progress_activity</span>
+        <Icon name="progress_activity" className="animate-spin" />
         Loading record...
       </div>
     )
@@ -89,11 +90,11 @@ export default function ShopIncomingDetail() {
           to="/shop-incoming"
           className="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6"
         >
-          <span className="material-symbols-outlined text-base">arrow_back</span>
+          <Icon name="arrow_back" size={16} />
           Back to Shop Incoming
         </Link>
         <div className="flex flex-col items-center justify-center py-24 text-on-surface-variant">
-          <span className="material-symbols-outlined text-5xl mb-3 opacity-30">move_to_inbox</span>
+          <Icon name="move_to_inbox" size={48} className="mb-3 opacity-30" />
           <p className="text-lg font-semibold">Record not found</p>
           <p className="text-sm mt-1">This stock record may have been deleted or doesn't exist.</p>
         </div>
@@ -107,8 +108,7 @@ export default function ShopIncomingDetail() {
       <Link
         to="/shop-incoming"
         className="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6"
-      >
-        <span className="material-symbols-outlined text-base">arrow_back</span>
+      >            <Icon name="arrow_back" size={16} />
         Back to Shop Incoming
       </Link>
 
@@ -126,7 +126,7 @@ export default function ShopIncomingDetail() {
       <div className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden mb-6">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-outline-variant/20 bg-surface-container-low/40">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary">inventory_2</span>
+            <Icon name="inventory_2" className="text-primary" />
           </div>
           <div>
             <p className="font-semibold text-on-surface">Specifications</p>
@@ -159,9 +159,7 @@ export default function ShopIncomingDetail() {
           ].map((item) => (
             <div key={item.label} className="p-5">
               <div className="flex items-center gap-2 mb-1">
-                <span className="material-symbols-outlined text-on-surface-variant text-base">
-                  {item.icon}
-                </span>
+                <Icon name={item.icon} size={16} className="text-on-surface-variant" />
                 <p className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">
                   {item.label}
                 </p>
@@ -176,7 +174,7 @@ export default function ShopIncomingDetail() {
       <div className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden">
         <div className="flex items-center gap-3 px-6 py-5 border-b border-outline-variant/20 bg-surface-container-low/40">
           <div className="w-10 h-10 rounded-lg bg-tertiary-container flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-tertiary-container">list_alt</span>
+            <Icon name="list_alt" className="text-on-tertiary-container" />
           </div>
           <div>
             <p className="font-semibold text-on-surface">Serial Number Entries</p>
@@ -189,9 +187,7 @@ export default function ShopIncomingDetail() {
         <div className="overflow-x-auto">
           {record.serialNumberEntries.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-on-surface-variant">
-              <span className="material-symbols-outlined text-4xl mb-2 opacity-30">
-                format_list_numbered
-              </span>
+              <Icon name="format_list_numbered" size={36} className="mb-2 opacity-30" />
               <p>No serial numbers recorded yet.</p>
             </div>
           ) : (

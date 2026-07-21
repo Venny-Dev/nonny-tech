@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useParts } from '../hooks/useParts'
+import { Icon } from '../components/ui/Icon'
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-NG', {
@@ -31,14 +32,12 @@ export default function Parts() {
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-16 text-on-surface-variant gap-2">
-              <span className="material-symbols-outlined animate-spin">progress_activity</span>
+              <Icon name="progress_activity" className="animate-spin" />
               Loading parts...
             </div>
           ) : parts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-on-surface-variant">
-              <span className="material-symbols-outlined text-5xl mb-3 opacity-30">
-                build_circle
-              </span>
+              <Icon name="build_circle" size={48} className="mb-3 opacity-30" />
               <p className="text-base font-medium">No parts removals recorded yet.</p>
               <p className="text-sm mt-1 text-on-surface-variant/70">
                 Parts removed from laptops before sale will appear here.

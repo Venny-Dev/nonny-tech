@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useAuth } from '../contexts/AuthContext'
+import { Icon } from '../components/ui/Icon'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ export default function Login() {
         {/* Logo / Brand */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary shadow-lg shadow-primary/20 mb-5">
-            <span className="material-symbols-outlined text-on-primary text-3xl">laptop</span>
+            <Icon name="laptop" size={30} className="text-on-primary" />
           </div>
           <h1 className="font-headline text-3xl font-extrabold text-on-surface tracking-tight">
             NonnyTech
@@ -98,9 +99,7 @@ export default function Login() {
                   tabIndex={-1}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  <span className="material-symbols-outlined text-xl">
-                    {showPassword ? 'visibility_off' : 'visibility'}
-                  </span>
+                  <Icon name={showPassword ? 'visibility_off' : 'visibility'} size={20} />
                 </button>
               </div>
             </div>
@@ -113,16 +112,12 @@ export default function Login() {
             >
               {isSubmitting ? (
                 <>
-                  <span className="material-symbols-outlined text-base animate-spin">
-                    progress_activity
-                  </span>
+                  <Icon name="progress_activity" size={16} className="animate-spin" />
                   Signing in...
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-base">
-                    login
-                  </span>
+                  <Icon name="login" size={16} />
                   Sign in
                 </>
               )}

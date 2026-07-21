@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/Icon'
 import type { ShopIncomingRecord } from '../services/shopIncomingService'
 
 export default function ShopIncoming() {
@@ -66,7 +67,7 @@ export default function ShopIncoming() {
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-lg font-bold text-sm shadow-lg hover:scale-[1.02] transition-all self-start sm:self-auto"
         >
-          <span className="material-symbols-outlined text-base">add</span>
+          <Icon name="add" size={16} />
           Add Item
         </button>
       </div>
@@ -110,7 +111,7 @@ export default function ShopIncoming() {
             <div
               className={`w-10 h-10 rounded-lg ${s.iconBg} flex items-center justify-center mb-3`}
             >
-              <span className={`material-symbols-outlined ${s.iconColor}`}>{s.icon}</span>
+              <Icon name={s.icon} className={s.iconColor} />
             </div>
             <p className="text-on-surface-variant text-xs font-medium mb-1">{s.label}</p>
             <p className="font-headline text-2xl font-bold text-on-surface">{s.value}</p>
@@ -123,9 +124,7 @@ export default function ShopIncoming() {
         {/* Toolbar */}
         <div className="flex items-center gap-3 p-5 border-b border-outline-variant/20">
           <div className="relative w-full sm:max-w-xs">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl">
-              search
-            </span>
+            <Icon name="search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input
               type="text"
               placeholder="Model, processor, RAM, storage..."
@@ -140,7 +139,7 @@ export default function ShopIncoming() {
         <div className="overflow-x-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-16 text-on-surface-variant gap-2">
-              <span className="material-symbols-outlined animate-spin">progress_activity</span>
+              <Icon name="progress_activity" className="animate-spin" />
               Loading records...
             </div>
           ) : (
@@ -184,7 +183,7 @@ export default function ShopIncoming() {
                         <td className="px-5 py-4 hidden md:table-cell">
                           {record.chargerQuantity > 0 ? (
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700">
-                              <span className="material-symbols-outlined text-sm">check</span>
+                              <Icon name="check" size={14} />
                               {record.chargerQuantity}
                             </span>
                           ) : (
@@ -219,16 +218,14 @@ export default function ShopIncoming() {
                               className="text-on-surface-variant hover:text-error transition-colors ml-1"
                               title="Delete record"
                             >
-                              <span className="material-symbols-outlined text-xl">delete</span>
+                              <Icon name="delete" size={20} />
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleExpand(record._id) }}
                               className="text-on-surface-variant hover:text-on-surface transition-colors"
                               title={isExpanded ? 'Collapse' : 'Expand'}
                             >
-                              <span className="material-symbols-outlined text-xl">
-                                {isExpanded ? 'expand_less' : 'expand_more'}
-                              </span>
+                              <Icon name={isExpanded ? 'expand_less' : 'expand_more'} size={20} />
                             </button>
                           </div>
                         </td>
@@ -288,9 +285,7 @@ export default function ShopIncoming() {
                 {filtered.length === 0 && (
                   <tr>
                     <td colSpan={8} className="px-5 py-16 text-center text-on-surface-variant">
-                      <span className="material-symbols-outlined text-4xl block mb-2 opacity-30">
-                        move_to_inbox
-                      </span>
+                      <Icon name="move_to_inbox" size={36} className="block mb-2 opacity-30" />
                       {search
                         ? 'No records match your search.'
                         : 'No shop incoming records yet. Add your first batch.'}
@@ -315,7 +310,7 @@ export default function ShopIncoming() {
                          disabled:opacity-30 disabled:cursor-not-allowed
                          hover:bg-surface-container transition-all"
             >
-              <span className="material-symbols-outlined text-base">chevron_left</span>
+              <Icon name="chevron_left" size={16} />
               Prev
             </button>
             <div className="flex items-center gap-1">
@@ -354,7 +349,7 @@ export default function ShopIncoming() {
                          hover:bg-surface-container transition-all"
             >
               Next
-              <span className="material-symbols-outlined text-base">chevron_right</span>
+              <Icon name="chevron_right" size={16} />
             </button>
           </div>
         </div>

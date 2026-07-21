@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Icon } from '@/components/ui/Icon'
 
 type DateFilter = 'all' | 'today' | 'week'
 
@@ -150,7 +151,7 @@ function DayGroup({
                       className="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error transition-all"
                       title="Delete sale"
                     >
-                      <span className="material-symbols-outlined text-xl">delete</span>
+                      <Icon name="delete" size={20} />
                     </button>
                   </td>
                 </tr>
@@ -231,7 +232,7 @@ export default function Sales() {
         ].map((s) => (
           <div key={s.label} className="bg-surface-container-lowest rounded-xl p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
             <div className={`w-10 h-10 rounded-lg ${s.iconBg} flex items-center justify-center mb-3`}>
-              <span className={`material-symbols-outlined ${s.iconColor}`}>{s.icon}</span>
+              <Icon name={s.icon} className={s.iconColor} />
             </div>
             <p className="text-on-surface-variant text-xs font-medium mb-1">{s.label}</p>
             <p className="font-headline text-2xl font-bold text-on-surface">{s.value}</p>
@@ -243,7 +244,7 @@ export default function Sales() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
           <div className="relative w-full sm:w-64">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-xl">search</span>
+            <Icon name="search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
             <input
               type="text"
               placeholder="Customer, serial, model..."
@@ -273,7 +274,7 @@ export default function Sales() {
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-lg font-bold text-sm shadow-lg hover:scale-[1.02] transition-all self-start sm:self-auto shrink-0"
         >
-          <span className="material-symbols-outlined text-base">add</span>
+          <Icon name="add" size={16} />
           Record Sale
         </button>
       </div>
@@ -281,12 +282,12 @@ export default function Sales() {
       {/* Grouped sales */}
       {isLoading ? (
         <div className="flex items-center justify-center py-24 text-on-surface-variant gap-2">
-          <span className="material-symbols-outlined animate-spin">progress_activity</span>
+          <Icon name="progress_activity" className="animate-spin" />
           Loading sales...
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-surface-container-lowest rounded-2xl shadow-sm flex flex-col items-center justify-center py-24 text-on-surface-variant">
-          <span className="material-symbols-outlined text-4xl block mb-2 opacity-30">receipt_long</span>
+          <Icon name="receipt_long" size={36} className="block mb-2 opacity-30" />
           {search || dateFilter !== 'all' || statusFilter !== 'all'
             ? 'No sales match your filters.'
             : 'No sales recorded yet.'}
@@ -329,7 +330,7 @@ export default function Sales() {
                   onClick={() => setOlderDaysVisible((v) => v + OLDER_PAGE_SIZE)}
                   className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-outline-variant/30 text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-all"
                 >
-                  <span className="material-symbols-outlined text-base">expand_more</span>
+                  <Icon name="expand_more" size={16} />
                   Load {Math.min(OLDER_PAGE_SIZE, olderGroups.length - olderDaysVisible)} more day{Math.min(OLDER_PAGE_SIZE, olderGroups.length - olderDaysVisible) !== 1 ? 's' : ''}
                 </button>
               )}
