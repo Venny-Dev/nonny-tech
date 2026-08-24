@@ -7,12 +7,13 @@ interface Props {
   onChange: (value: string) => void
   onSelect: (result: TypeaheadResult) => void
   onClear: () => void
+  source?: 'shop' | 'warehouse'
 }
 
 const inputCls =
   'w-full bg-surface-container border border-outline-variant/40 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all'
 
-export default function SerialTypeahead({ value, onChange, onSelect, onClear }: Props) {
+export default function SerialTypeahead({ value, onChange, onSelect, onClear, source }: Props) {
   const [results, setResults] = useState<TypeaheadResult[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -30,7 +31,7 @@ export default function SerialTypeahead({ value, onChange, onSelect, onClear }: 
 
       setIsLoading(true)
       shopIncomingService
-        .search(value)
+        .search(value, source)
         .then((data) => {
           setResults(data)
           setShowDropdown(true)
@@ -40,7 +41,7 @@ export default function SerialTypeahead({ value, onChange, onSelect, onClear }: 
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [value])
+  }, [value, source])
 
   // Outside click detection
   useEffect(() => {
@@ -96,14 +97,25 @@ export default function SerialTypeahead({ value, onChange, onSelect, onClear }: 
           ) : (
             results.map((r) => (
               <li
-                key={r.entryId}
+                key={`${r.source ?? 'shop'}-${r.entryId}`}
                 className="flex flex-col px-3 py-2 cursor-pointer hover:bg-surface-container transition-colors"
                 onMouseDown={(e) => {
                   e.preventDefault()
                   handleSelect(r)
                 }}
               >
-                <span className="text-sm font-semibold">{r.serialNumber}</span>
+                <span className="flex items-center gap-2 text-sm font-semibold">
+                  {r.serialNumber}
+                  <span
+                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase ${
+                      r.source === 'warehouse'
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'bg-emerald-50 text-emerald-700'
+                    }`}
+                  >
+                    {r.source === 'warehouse' ? 'Warehouse' : 'Shop'}
+                  </span>
+                </span>
                 <span className="text-xs text-on-surface-variant">{r.modelNumber}</span>
               </li>
             ))

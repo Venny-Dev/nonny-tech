@@ -1,15 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import salesService, { type CreateSaleInput, type PaymentStatus } from '../services/salesService'
+import salesService, { type CreateSaleInput, type PaymentStatus, type SaleSource } from '../services/salesService'
 
 const KEYS = {
   all: ['sales'] as const,
   detail: (id: string) => ['sales', id] as const,
+  bySource: (source: SaleSource) => ['sales', source] as const,
 }
 
-export function useSales() {
+export function useSales(source?: SaleSource) {
   const { data, isLoading } = useQuery({
-    queryKey: KEYS.all,
-    queryFn: () => salesService.getAll(),
+    queryKey: source ? KEYS.bySource(source) : KEYS.all,
+    queryFn: () => salesService.getAll(source),
   })
   return { sales: data?.data ?? [], isLoading }
 }

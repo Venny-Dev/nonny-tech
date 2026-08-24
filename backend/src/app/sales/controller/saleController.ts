@@ -7,7 +7,8 @@ const saleService = new SaleService();
 
 export const getAllSales = catchAsync(async (req: Request, res: Response) => {
   const serialNumber = req.query["serialNumber"] as string | undefined;
-  const sales = await saleService.getAll({ serialNumber });
+  const source = req.query["source"] as "shop" | "warehouse" | undefined;
+  const sales = await saleService.getAll({ serialNumber, source });
   res.status(200).json({ status: "success", data: sales });
 });
 

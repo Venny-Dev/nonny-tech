@@ -171,8 +171,8 @@ export default function Dashboard() {
                       <Icon name={sale.paymentStatus === 'paid' ? 'sell' : 'undo'} size={18} className={sale.paymentStatus === 'paid' ? 'text-emerald-600' : 'text-error'} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="block text-sm font-bold truncate">{sale.name}</span>
-                      <span className="block text-xs text-on-surface-variant">{sale.serialNumber} · qty {sale.quantity}</span>
+                      <span className="block text-sm font-bold truncate">{sale.modelNumber}</span>
+                      <span className="block text-xs text-on-surface-variant">{sale.serialNumber}</span>
                     </div>
                     <span className="text-[10px] text-on-surface-variant font-medium shrink-0">
                       {formatDate(sale.createdAt)}

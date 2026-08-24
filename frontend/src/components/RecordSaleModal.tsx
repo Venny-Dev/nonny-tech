@@ -25,6 +25,7 @@ import type { CreateSaleInput, PaymentStatus } from '../services/salesService'
 interface Props {
   open: boolean
   onClose: () => void
+  source?: 'shop' | 'warehouse'
 }
 
 interface UnitRow {
@@ -35,6 +36,19 @@ interface UnitRow {
   originalRam: string
   originalStorage: string
   price: number
+}
+
+function SourceBadge({ source }: { source?: 'shop' | 'warehouse' }) {
+  if (!source) return null
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+        source === 'warehouse' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'
+      }`}
+    >
+      {source === 'warehouse' ? 'Warehouse' : 'Shop'}
+    </span>
+  )
 }
 
 const inputCls =
@@ -70,7 +84,7 @@ function hasMismatch(units: UnitRow[]): boolean {
   return resolved.some((u) => specKey(u.result!) !== first)
 }
 
-export default function RecordSaleModal({ open, onClose }: Props) {
+export default function RecordSaleModal({ open, onClose, source }: Props) {
   const [units, setUnits] = useState<UnitRow[]>([{ serialValue: '', result: null, ram: '', storage: '', originalRam: '', originalStorage: '', price: 0 }])
   const [chargerQuantity, setChargerQuantity] = useState(0)
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('pending')
@@ -112,19 +126,28 @@ export default function RecordSaleModal({ open, onClose }: Props) {
   function buildPayloads(): CreateSaleInput[] {
     return units
       .filter((u) => u.result)
-      .map((u) => ({
-        serialNumber: u.result!.serialNumber,
-        modelNumber: u.result!.modelNumber,
-        processor: u.result!.processor,
-        ram: u.ram,
-        storage: u.storage,
-        chargerQuantity,
-        condition: u.result!.condition,
-        price: u.price,
-        paymentStatus,
-        inventoryItem: u.result!.parentId,
-        customerName,
-      }))
+      .map((u) => {
+        const source = u.result!.source ?? 'shop'
+        const payload: CreateSaleInput = {
+          serialNumber: u.result!.serialNumber,
+          modelNumber: u.result!.modelNumber,
+          processor: u.result!.processor,
+          ram: u.ram,
+          storage: u.storage,
+          chargerQuantity,
+          condition: u.result!.condition,
+          price: u.price,
+          paymentStatus,
+          source,
+          customerName,
+        }
+        if (source === 'warehouse') {
+          payload.warehouseRecord = u.result!.parentId
+        } else {
+          payload.inventoryItem = u.result!.parentId
+        }
+        return payload
+      })
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -173,6 +196,12 @@ export default function RecordSaleModal({ open, onClose }: Props) {
   const allResolved = units.every((u) => u.result !== null)
   const mismatch = hasMismatch(units)
 
+  // Check if any unit has RAM or Storage changed but the new value is empty
+  const hasEmptyOverrides = units.some((u) => u.result && (
+    (u.ram !== u.originalRam && !u.ram.trim()) ||
+    (u.storage !== u.originalStorage && !u.storage.trim())
+  ))
+
   return (
     <>
       <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
@@ -208,9 +237,11 @@ export default function RecordSaleModal({ open, onClose }: Props) {
                     onChange={(v) => updateUnit(i, { serialValue: v, result: v ? unit.result : null })}
                     onSelect={(r) => updateUnit(i, { serialValue: r.serialNumber, result: r, ram: r.ram, storage: r.storage, originalRam: r.ram, originalStorage: r.storage })}
                     onClear={() => updateUnit(i, { serialValue: '', result: null, ram: '', storage: '', originalRam: '', originalStorage: '', price: 0 })}
+                    source={source}
                   />
                   {unit.result && (
-                    <div className="flex flex-wrap gap-1.5 mt-1">
+                    <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                      <SourceBadge source={unit.result.source} />
                       {[unit.result.modelNumber, unit.result.processor, unit.result.ram, unit.result.storage].map((s) => (
                         <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant border border-outline-variant/20">
                           {s}
@@ -222,32 +253,52 @@ export default function RecordSaleModal({ open, onClose }: Props) {
                   {unit.result && (
                     <div className="grid grid-cols-2 gap-2 mt-1">
                       <div className="flex flex-col gap-1">
-                        <label className="text-xs text-on-surface-variant">RAM</label>
+                        <label className="text-xs text-on-surface-variant">
+                          RAM {unit.ram !== unit.originalRam && unit.originalRam && (
+                            <span className="text-amber-600">(recorded: {unit.originalRam})</span>
+                          )}
+                        </label>
                         <div className="relative">
                           <input
                             type="text"
                             value={unit.ram}
                             onChange={(e) => updateUnit(i, { ram: e.target.value })}
-                            className={`${inputCls} ${unit.ram !== unit.originalRam ? 'border-amber-400' : ''}`}
+                            placeholder={unit.originalRam}
+                            className={`${inputCls} ${unit.ram !== unit.originalRam ? 'border-amber-400 bg-amber-50/50' : ''}`}
                           />
                           {unit.ram !== unit.originalRam && (
                             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-amber-600 font-medium">Changed</span>
                           )}
                         </div>
+                        {unit.ram !== unit.originalRam && unit.originalRam && (
+                          <p className="text-[11px] text-amber-600 leading-tight">
+                            This laptop was recorded with {unit.originalRam} RAM. Enter the RAM it is being sold with.
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-col gap-1">
-                        <label className="text-xs text-on-surface-variant">Storage</label>
+                        <label className="text-xs text-on-surface-variant">
+                          Storage {unit.storage !== unit.originalStorage && unit.originalStorage && (
+                            <span className="text-amber-600">(recorded: {unit.originalStorage})</span>
+                          )}
+                        </label>
                         <div className="relative">
                           <input
                             type="text"
                             value={unit.storage}
                             onChange={(e) => updateUnit(i, { storage: e.target.value })}
-                            className={`${inputCls} ${unit.storage !== unit.originalStorage ? 'border-amber-400' : ''}`}
+                            placeholder={unit.originalStorage}
+                            className={`${inputCls} ${unit.storage !== unit.originalStorage ? 'border-amber-400 bg-amber-50/50' : ''}`}
                           />
                           {unit.storage !== unit.originalStorage && (
                             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-amber-600 font-medium">Changed</span>
                           )}
                         </div>
+                        {unit.storage !== unit.originalStorage && unit.originalStorage && (
+                          <p className="text-[11px] text-amber-600 leading-tight">
+                            This laptop was recorded with {unit.originalStorage} storage. Enter the storage it is being sold with.
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -328,11 +379,17 @@ export default function RecordSaleModal({ open, onClose }: Props) {
               </p>
             )}
 
+            {hasEmptyOverrides && (
+              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">
+                You changed RAM or Storage from the recorded values — please enter the new values before recording.
+              </p>
+            )}
+
             <div className="flex gap-3 pt-1">
               <Button type="button" variant="outline" className="flex-1" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" className="flex-1" disabled={isRecording || !allResolved}>
+              <Button type="submit" className="flex-1" disabled={isRecording || !allResolved || hasEmptyOverrides}>
                 {isRecording ? 'Recording...' : `Record ${quantity > 1 ? `${quantity} Sales` : 'Sale'}`}
               </Button>
             </div>

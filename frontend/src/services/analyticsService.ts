@@ -7,11 +7,10 @@ export interface MonthlySale {
 
 export interface RecentSale {
   _id: string
-  name: string
   modelNumber: string
   serialNumber: string
-  paymentStatus: 'paid' | 'returned'
-  quantity: number
+  paymentStatus: 'paid' | 'pending' | 'returned'
+  price: number
   createdAt: string
 }
 

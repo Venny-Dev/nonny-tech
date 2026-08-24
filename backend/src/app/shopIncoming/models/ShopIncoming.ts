@@ -4,7 +4,7 @@ export interface ISerialNumberEntry {
   _id: mongoose.Types.ObjectId;
   serialNumber: string;
   condition: string[];
-  status: "available" | "sold";
+  status: "available" | "sold" | "transferred";
   dateSold: Date | null;
 }
 
@@ -23,7 +23,7 @@ export interface IShopIncomingRecord extends Document {
 const serialNumberEntrySchema = new mongoose.Schema<ISerialNumberEntry>({
   serialNumber: { type: String, required: [true, "Serial number is required"] },
   condition: { type: [String], default: ["ok"] },
-  status: { type: String, enum: ["available", "sold"], default: "available" },
+  status: { type: String, enum: ["available", "sold", "transferred"], default: "available" },
   dateSold: { type: Date, default: null },
 });
 

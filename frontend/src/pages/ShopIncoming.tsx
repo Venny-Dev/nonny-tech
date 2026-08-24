@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useShopIncomingPagination, useDeleteShopIncoming } from '../hooks/useShopIncoming'
-import ShopIncomingModal from '../components/ShopIncomingModal'
 import AddSerialModal from '../components/AddSerialModal'
+import RestockModal from '../components/RestockModal'
 import {
   Dialog,
   DialogContent,
@@ -19,9 +19,9 @@ import type { ShopIncomingRecord } from '../services/shopIncomingService'
 export default function ShopIncoming() {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const [showModal, setShowModal] = useState(false)
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [fillSlotsRecord, setFillSlotsRecord] = useState<ShopIncomingRecord | null>(null)
+  const [restockRecord, setRestockRecord] = useState<ShopIncomingRecord | null>(null)
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
   const { records, isLoading, total, totalPages, page, goToPage, hasNext, hasPrev } =
@@ -63,13 +63,6 @@ export default function ShopIncoming() {
             Manage and track your incoming laptop stock.
           </p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-lg font-bold text-sm shadow-lg hover:scale-[1.02] transition-all self-start sm:self-auto"
-        >
-          <Icon name="add" size={16} />
-          Add Item
-        </button>
       </div>
 
       {/* Stats */}
@@ -214,6 +207,13 @@ export default function ShopIncoming() {
                               </button>
                             )}
                             <button
+                              onClick={(e) => { e.stopPropagation(); setRestockRecord(record) }}
+                              className="text-xs font-medium text-on-surface-variant hover:text-primary hover:underline whitespace-nowrap"
+                              title="Restock this record"
+                            >
+                              Restock
+                            </button>
+                            <button
                               onClick={(e) => { e.stopPropagation(); setPendingDeleteId(record._id) }}
                               className="text-on-surface-variant hover:text-error transition-colors ml-1"
                               title="Delete record"
@@ -355,14 +355,20 @@ export default function ShopIncoming() {
         </div>
       </div>
 
-      <ShopIncomingModal open={showModal} onClose={() => setShowModal(false)} />
-
       {fillSlotsRecord && (
         <AddSerialModal
           open={!!fillSlotsRecord}
           onClose={() => setFillSlotsRecord(null)}
           recordId={fillSlotsRecord._id}
           pendingSlots={fillSlotsRecord.pendingSlots}
+        />
+      )}
+
+      {restockRecord && (
+        <RestockModal
+          open={!!restockRecord}
+          onClose={() => setRestockRecord(null)}
+          record={restockRecord}
         />
       )}
 

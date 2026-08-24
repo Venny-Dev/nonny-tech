@@ -46,6 +46,11 @@ export interface AddEntriesInput {
   entries: { serialNumber: string; condition?: string[] }[]
 }
 
+export interface RestockInput {
+  additionalQuantity: number
+  serialNumberEntries?: { serialNumber: string; condition?: string[] }[]
+}
+
 export interface UpdateEntryInput {
   condition?: string[]
   status?: 'available' | 'sold'
@@ -62,6 +67,7 @@ export interface TypeaheadResult {
   storage: string
   chargerQuantity: number
   condition: string[]
+  source?: 'shop' | 'warehouse'
 }
 
 const shopIncomingService = {
@@ -98,6 +104,12 @@ const shopIncomingService = {
       .json<{ status: string; data: ShopIncomingRecord }>()
       .then((res) => res.data),
 
+  restock: (id: string, data: RestockInput) =>
+    apiClient
+      .patch(`api/shop-incoming/${id}/restock`, { json: data })
+      .json<{ status: string; data: ShopIncomingRecord }>()
+      .then((res) => res.data),
+
   updateEntry: (id: string, serialNumber: string, data: UpdateEntryInput) =>
     apiClient
       .patch(`api/shop-incoming/${id}/entries/${serialNumber}`, { json: data })
@@ -107,9 +119,9 @@ const shopIncomingService = {
   deleteEntry: (id: string, serialNumber: string) =>
     apiClient.delete(`api/shop-incoming/${id}/entries/${serialNumber}`),
 
-  search: (q: string) =>
+  search: (q: string, source?: 'shop' | 'warehouse') =>
     apiClient
-      .get('api/shop-incoming/search', { searchParams: { q } })
+      .get('api/stock/search', { searchParams: { q, ...(source ? { source } : {}) } })
       .json<{ status: string; data: TypeaheadResult[] }>()
       .then((res) => res.data),
 

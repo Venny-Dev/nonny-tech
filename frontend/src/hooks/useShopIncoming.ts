@@ -4,6 +4,7 @@ import shopIncomingService, {
   type CreateShopIncomingInput,
   type AddEntriesInput,
   type UpdateEntryInput,
+  type RestockInput,
 } from '../services/shopIncomingService'
 
 const KEYS = {
@@ -87,6 +88,19 @@ export function useDeleteShopIncoming() {
     },
   })
   return { deleteRecord: mutate, isDeleting: isPending }
+}
+
+export function useRestockShopIncoming() {
+  const queryClient = useQueryClient()
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: RestockInput }) =>
+      shopIncomingService.restock(id, data),
+    onSuccess: (_result, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['shopIncoming'] })
+      queryClient.invalidateQueries({ queryKey: KEYS.detail(id) })
+    },
+  })
+  return { restockRecord: mutate, isRestocking: isPending, restockError: error }
 }
 
 export function useAddEntries() {

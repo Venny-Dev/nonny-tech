@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import RecordSaleModal from '../components/RecordSaleModal'
 import { useSales, useDeleteSale } from '../hooks/useSales'
-import type { PaymentStatus, Sale } from '../services/salesService'
+import type { PaymentStatus, Sale, SaleSource } from '../services/salesService'
 import {
   Dialog,
   DialogContent,
@@ -61,6 +61,19 @@ const paymentBadge: Record<PaymentStatus, string> = {
   pending: 'text-blue-700 bg-blue-50',
   paid: 'text-emerald-700 bg-emerald-50',
   returned: 'text-amber-700 bg-amber-50',
+}
+
+function SourceBadge({ source }: { source?: SaleSource }) {
+  const value = source ?? 'shop'
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+        value === 'warehouse' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'
+      }`}
+    >
+      {value === 'warehouse' ? 'Warehouse' : 'Shop'}
+    </span>
+  )
 }
 
 function groupByDay(sales: Sale[]): { label: string; date: string; sales: Sale[] }[] {
@@ -125,7 +138,10 @@ function DayGroup({
                     {sale.customerName}
                   </td>
                   <td className="px-5 py-4">
-                    <p className="font-semibold text-on-surface leading-tight">{sale.modelNumber}</p>
+                    <p className="flex items-center gap-2 font-semibold text-on-surface leading-tight">
+                      {sale.modelNumber}
+                      <SourceBadge source={sale.source} />
+                    </p>
                     <p className="text-xs text-on-surface-variant mt-0.5">{sale.processor}</p>
                   </td>
                   <td className="px-5 py-4 font-mono text-xs text-on-surface-variant hidden sm:table-cell">
@@ -164,16 +180,17 @@ function DayGroup({
   )
 }
 
-export default function Sales() {
+export default function Sales({ source: sourceOverride }: { source?: SaleSource } = {}) {
   const navigate = useNavigate()
   const [dateFilter, setDateFilter] = useState<DateFilter>('all')
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all')
+  const [sourceFilter, setSourceFilter] = useState<'all' | SaleSource>(sourceOverride ?? 'all')
   const [showModal, setShowModal] = useState(false)
   const [search, setSearch] = useState('')
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [olderDaysVisible, setOlderDaysVisible] = useState(OLDER_PAGE_SIZE)
 
-  const { sales, isLoading } = useSales()
+  const { sales, isLoading } = useSales(sourceOverride)
   const { deleteSale, isDeleting } = useDeleteSale()
 
   const filtered = useMemo(() => {
@@ -190,10 +207,11 @@ export default function Sales() {
         (dateFilter === 'week' && isThisWeek(s.soldAt))
 
       const matchesStatus = statusFilter === 'all' || s.paymentStatus === statusFilter
+      const matchesSource = sourceFilter === 'all' || (s.source ?? 'shop') === sourceFilter
 
-      return matchesSearch && matchesDate && matchesStatus
+      return matchesSearch && matchesDate && matchesStatus && matchesSource
     })
-  }, [sales, search, dateFilter, statusFilter])
+  }, [sales, search, dateFilter, statusFilter, sourceFilter])
 
   const grouped = useMemo(() => groupByDay(filtered), [filtered])
 
@@ -215,9 +233,9 @@ export default function Sales() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
         <div>
           <h1 className="font-headline text-3xl font-extrabold text-on-surface tracking-tight mb-1">
-            Sales Ledger
+            {sourceOverride === 'warehouse' ? 'Warehouse Sales' : sourceOverride === 'shop' ? 'Shop Sales' : 'Sales Ledger'}
           </h1>
-          <p className="text-on-surface-variant">Review and manage your transaction history.</p>
+          <p className="text-on-surface-variant">{sourceOverride ? `${sourceOverride === 'warehouse' ? 'Warehouse' : 'Shop'} transaction history.` : 'Review and manage your transaction history.'}</p>
         </div>
       </div>
 
@@ -269,6 +287,16 @@ export default function Sales() {
               </button>
             ))}
           </div>
+          {!sourceOverride && (
+            <div className="flex items-center bg-surface-container-lowest border border-outline-variant/20 p-1 rounded-xl shrink-0">
+              {([['all', 'All'], ['shop', 'Shop'], ['warehouse', 'Warehouse']] as const).map(([val, label]) => (
+                <button key={val} onClick={() => setSourceFilter(val)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${sourceFilter === val ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -288,7 +316,7 @@ export default function Sales() {
       ) : filtered.length === 0 ? (
         <div className="bg-surface-container-lowest rounded-2xl shadow-sm flex flex-col items-center justify-center py-24 text-on-surface-variant">
           <Icon name="receipt_long" size={36} className="block mb-2 opacity-30" />
-          {search || dateFilter !== 'all' || statusFilter !== 'all'
+          {search || dateFilter !== 'all' || statusFilter !== 'all' || sourceFilter !== 'all'
             ? 'No sales match your filters.'
             : 'No sales recorded yet.'}
         </div>
@@ -343,8 +371,8 @@ export default function Sales() {
 
           <p className="text-xs text-on-surface-variant text-center pb-2">
             Showing {filtered.length} of {sales.length} sales
-            {(dateFilter !== 'all' || statusFilter !== 'all') && (
-              <button onClick={() => { setDateFilter('all'); setStatusFilter('all') }} className="ml-2 text-primary font-medium hover:underline">
+            {(dateFilter !== 'all' || statusFilter !== 'all' || sourceFilter !== 'all') && (
+              <button onClick={() => { setDateFilter('all'); setStatusFilter('all'); if (!sourceOverride) setSourceFilter('all') }} className="ml-2 text-primary font-medium hover:underline">
                 Clear filters
               </button>
             )}
@@ -352,7 +380,7 @@ export default function Sales() {
         </div>
       )}
 
-      <RecordSaleModal open={showModal} onClose={() => setShowModal(false)} />
+      <RecordSaleModal open={showModal} onClose={() => setShowModal(false)} source={sourceOverride} />
 
       <Dialog open={!!pendingDeleteId} onOpenChange={(v) => !v && !isDeleting && setPendingDeleteId(null)}>
         <DialogContent className="max-w-sm">

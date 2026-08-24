@@ -7,7 +7,6 @@ import { Icon } from '../components/ui/Icon'
 export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const email = 'admin@nonnytech.com'
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -18,7 +17,7 @@ export default function Login() {
 
     setIsSubmitting(true)
     try {
-      await login(email, password)
+      await login(password)
       toast.success('Welcome back!')
       navigate('/dashboard', { replace: true })
     } catch (err) {
@@ -47,7 +46,7 @@ export default function Login() {
             NonnyTech
           </h1>
           <p className="text-on-surface-variant mt-1.5 text-sm font-medium">
-            Admin Console
+            Inventory System
           </p>
         </div>
 
@@ -58,20 +57,12 @@ export default function Login() {
               Sign in
             </h2>
             <p className="text-sm text-on-surface-variant mt-1">
-              Enter the admin password to continue.
+              Enter your password to continue.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            {/* Hidden username field for password manager autofill */}
-            <input
-              type="text"
-              value={email}
-              readOnly
-              className="hidden"
-              autoComplete="username"
-              tabIndex={-1}
-            />
+
 
             {/* Password field */}
             <div className="flex flex-col gap-1.5">
@@ -87,7 +78,7 @@ export default function Login() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter admin password"
+                  placeholder="Enter password"
                   autoFocus
                   autoComplete="current-password"
                   className="w-full bg-surface-container border border-outline-variant/40 rounded-lg pl-4 pr-12 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-on-surface-variant/50"

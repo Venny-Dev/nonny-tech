@@ -78,15 +78,18 @@ export default function SaleDetail() {
     )
   }
 
+  const backLink = sale?.source === 'warehouse' ? '/sales/warehouse' : '/sales/shop'
+  const backLabel = sale?.source === 'warehouse' ? 'Back to Warehouse Sales' : 'Back to Shop Sales'
+
   if (isError || !sale) {
     return (
       <div className="p-6 lg:p-8">
         <Link
-          to="/sales"
+          to="/dashboard"
           className="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6"
         >
           <Icon name="arrow_back" size={16} />
-          Back to Sales
+          Back to Dashboard
         </Link>
         <div className="flex flex-col items-center justify-center py-24 text-on-surface-variant">
           <Icon name="receipt_long" size={48} className="mb-3 opacity-30" />
@@ -101,10 +104,10 @@ export default function SaleDetail() {
     <div className="p-6 lg:p-8 max-w-3xl">
       {/* Back link */}
       <Link
-        to="/sales"
+        to={backLink}
         className="inline-flex items-center gap-1.5 text-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6"
       >            <Icon name="arrow_back" size={16} />
-        Back to Sales
+        {backLabel}
       </Link>
 
       {/* Page header */}

@@ -13,13 +13,38 @@ export class AuthController {
 
   login = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-      const { email, password } = req.body;
-      if (!email || !password) return next(new AppError("Please provide email and password!", 400));
+      const { password } = req.body;
+      if (!password) return next(new AppError("Please provide a password!", 400));
 
-      const user = await this.authService.getUserByEmailWithPassword(email);
-      // console.log(user);
-      if (!user || !(await user.confirmPassword(password, user.password!))) {
-        return next(new AppError("Incorrect email or password", 401));
+      const adminPassword = process.env.APP_PASSWORD;
+      const warehousePassword = process.env.WAREHOUSE_PASSWORD || "Diamond2026";
+      const shopPassword = process.env.SHOP_PASSWORD || "aridex2026";
+
+      let role: "admin" | "warehouse" | "shop" | null = null;
+      if (adminPassword && password === adminPassword) {
+        role = "admin";
+      } else if (password === warehousePassword) {
+        role = "warehouse";
+      } else if (password === shopPassword) {
+        role = "shop";
+      }
+
+      if (!role) {
+        return next(new AppError("Incorrect password", 401));
+      }
+
+      // Find or create a user for this role
+      let user = await User.findOne({ role });
+      if (!user) {
+        user = await User.create({
+          email: `${role}@nonnytech.com`,
+          password: password,
+          passwordConfirm: password,
+          firstName: role.charAt(0).toUpperCase() + role.slice(1),
+          lastName: "User",
+          role,
+          isVerified: true,
+        });
       }
 
       const token = this.authService.signToken(user._id.toString());
@@ -34,7 +59,13 @@ export class AuthController {
       res.status(200).json({
         status: "success",
         token,
-        user: { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName },
+        user: {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
       });
     },
   );
@@ -58,7 +89,7 @@ export class AuthController {
       }
 
       const decoded = this.authService.verifyToken(token);
-      const user = await User.findById(decoded.id).select("email firstName lastName");
+      const user = await User.findById(decoded.id).select("email firstName lastName role");
 
       if (!user) {
         return next(new AppError("User no longer exists", 401));
@@ -66,7 +97,13 @@ export class AuthController {
 
       res.status(200).json({
         status: "success",
-        user: { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName },
+        user: {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
       });
     },
   );

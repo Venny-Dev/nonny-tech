@@ -54,6 +54,21 @@ export const addEntries = catchAsync(
   },
 );
 
+export const restockShopIncoming = catchAsync(
+  async (req: Request, res: Response) => {
+    const { additionalQuantity, serialNumberEntries } = req.body;
+    if (additionalQuantity === undefined) {
+      throw new AppError("additionalQuantity is required", 400);
+    }
+    const record = await service.restock(
+      req.params["id"] as string,
+      Number(additionalQuantity),
+      serialNumberEntries ?? [],
+    );
+    res.status(200).json({ status: "success", data: record });
+  },
+);
+
 export const updateEntry = catchAsync(
   async (req: Request, res: Response) => {
     const record = await service.updateEntry(
