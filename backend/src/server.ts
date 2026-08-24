@@ -10,33 +10,57 @@ import globalErrorHandler from "./middleware/errorController.js";
 import AppError from "./utils/AppError.js";
 import User from "./app/auth/models/User.js";
 
-const SEED_PASSWORD = process.env.APP_PASSWORD 
-const SEED_EMAIL = process.env.APP_EMAIL 
+const SEED_PASSWORD = process.env.APP_PASSWORD;
+const SEED_EMAIL = process.env.APP_EMAIL;
+const WAREHOUSE_PASSWORD = process.env.WAREHOUSE_PASSWORD || "Diamond2026";
+const SHOP_PASSWORD = process.env.SHOP_PASSWORD || "aridex2026";
 
-async function seedAdminUser() {
-  // console.log(SEED_EMAIL, SEED_PASSWORD);
-  try {
-    const existing = await User.findOne({ email: SEED_EMAIL });
-    // console.log(existing);
-    if (!existing) {
-      await User.create({
-        email: SEED_EMAIL,
-        password: SEED_PASSWORD,
-        passwordConfirm: SEED_PASSWORD,
-        firstName: "Admin",
-        lastName: "NonnyTech",
-        isVerified: true,
-      });
-      console.log(`✅ Default admin user seeded (${SEED_EMAIL})`);
+async function seedUsers() {
+  const users = [
+    {
+      email: SEED_EMAIL,
+      password: SEED_PASSWORD,
+      firstName: "Admin",
+      lastName: "NonnyTech",
+      role: "admin" as const,
+    },
+    {
+      email: "warehouse@nonnytech.com",
+      password: WAREHOUSE_PASSWORD,
+      firstName: "Warehouse",
+      lastName: "User",
+      role: "warehouse" as const,
+    },
+    {
+      email: "shop@nonnytech.com",
+      password: SHOP_PASSWORD,
+      firstName: "Shop",
+      lastName: "User",
+      role: "shop" as const,
+    },
+  ];
+
+  for (const userData of users) {
+    try {
+      if (!userData.email || !userData.password) continue;
+      const existing = await User.findOne({ email: userData.email });
+      if (!existing) {
+        await User.create({
+          ...userData,
+          passwordConfirm: userData.password,
+          isVerified: true,
+        });
+        console.log(`✅ ${userData.role} user seeded (${userData.email})`);
+      }
+    } catch (err) {
+      console.error(`⚠️ Could not seed ${userData.role} user:`, (err as Error).message);
     }
-  } catch (err) {
-    console.error("⚠️ Could not seed admin user:", (err as Error).message);
   }
 }
 
 const main = async () => {
   await createMongooseConnection();
-  await seedAdminUser();
+  await seedUsers();
 
   const app = express();
 
@@ -91,3 +115,10 @@ const main = async () => {
 };
 
 main().catch(console.error);
+
+// model, ramgb, ssd, processor, serial nur mber, (for wharehouse)
+// send messages when laptops are being transfeered from wharehouse to computer village, and back 
+// Keep history of total grouped laptop
+// Divide the sales, to show sold from computer village and soled from wharehouse
+// fix ram bug, of being able to add ram that is different from the on recorded.
+// Add the ability to edit a laptop spec that is already recorded.

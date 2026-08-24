@@ -3,8 +3,11 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
+export type UserRole = "admin" | "warehouse" | "shop";
+
 export interface IUser extends Document {
   email: string;
+  role: UserRole;
   firstName?: string;
   lastName?: string;
   image?: string;
@@ -31,6 +34,11 @@ const userSchema = new mongoose.Schema<IUser>(
       unique: true,
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email"],
+    },
+    role: {
+      type: String,
+      enum: ["admin", "warehouse", "shop"],
+      default: "admin",
     },
     firstName: String,
     lastName: String,

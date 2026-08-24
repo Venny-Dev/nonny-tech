@@ -101,6 +101,53 @@ export class ShopIncomingService {
     return withCounts(record);
   }
 
+  async restock(
+    id: string,
+    additionalQuantity: number,
+    entries: Partial<ISerialNumberEntry>[] = [],
+  ) {
+    // 1. Validate additionalQuantity — must be a positive integer
+    if (!Number.isInteger(additionalQuantity) || additionalQuantity < 1) {
+      throw new AppError(
+        `additionalQuantity must be a positive integer, received: ${additionalQuantity}`,
+        400,
+      );
+    }
+
+    // 2. Find record (404 if missing)
+    const record = await ShopIncoming.findById(id);
+    if (!record) throw new AppError("Shop incoming record not found", 404);
+
+    // 3. Validate entry count does not exceed additionalQuantity
+    if (entries.length > additionalQuantity) {
+      throw new AppError(
+        `Cannot add ${entries.length} entries: additionalQuantity is ${additionalQuantity}`,
+        400,
+      );
+    }
+
+    // 4. Check for duplicate serial numbers (all-or-nothing, before any write)
+    for (const entry of entries) {
+      if (!entry.serialNumber) continue;
+      const conflict = await ShopIncoming.findOne({
+        "serialNumberEntries.serialNumber": entry.serialNumber,
+      });
+      if (conflict) {
+        throw new AppError(
+          `Serial number ${entry.serialNumber} already exists`,
+          409,
+        );
+      }
+    }
+
+    // 5. Apply changes
+    record.quantity += additionalQuantity;
+    record.serialNumberEntries.push(...(entries as ISerialNumberEntry[]));
+    await record.save();
+
+    return withCounts(record);
+  }
+
   async update(
     id: string,
     data: Partial<

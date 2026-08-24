@@ -1,7 +1,36 @@
 import { Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync.js";
 import ShopIncoming from "../shopIncoming/models/ShopIncoming.js";
+import WarehouseIncoming from "../warehouseIncoming/models/WarehouseIncoming.js";
 import Sale from "../sales/models/Sale.js";
+import { SaleService } from "../sales/services/SaleService.js";
+
+const saleService = new SaleService();
+
+export const getDailyReport = catchAsync(
+  async (req: Request, res: Response) => {
+    const date = (req.query["date"] as string) || new Date().toISOString().slice(0, 10);
+    const report = await saleService.getDailyReport(date);
+    res.status(200).json({ status: "success", data: report });
+  },
+);
+
+export const getWarehouseAnalytics = catchAsync(
+  async (_req: Request, res: Response) => {
+    const records = await WarehouseIncoming.find();
+    const units = records.flatMap((r) => r.serialNumberEntries);
+    res.status(200).json({
+      status: "success",
+      data: {
+        totalRecords: records.length,
+        totalUnits: records.reduce((sum, r) => sum + r.quantity, 0),
+        available: units.filter((u) => u.status === "available").length,
+        transferred: units.filter((u) => u.status === "transferred").length,
+        sold: units.filter((u) => u.status === "sold").length,
+      },
+    });
+  },
+);
 
 export const getDashboardAnalytics = catchAsync(
   async (_req: Request, res: Response) => {
@@ -11,6 +40,7 @@ export const getDashboardAnalytics = catchAsync(
     const [
       totalSales,
       inStockResult,
+      warehouseStockResult,
       lowStockResult,
       monthlySales,
       recentSales,
@@ -20,6 +50,13 @@ export const getDashboardAnalytics = catchAsync(
 
       // Count serial number entries with status "available"
       ShopIncoming.aggregate([
+        { $unwind: "$serialNumberEntries" },
+        { $match: { "serialNumberEntries.status": "available" } },
+        { $count: "total" },
+      ]),
+
+      // Count warehouse units still available (not transferred/sold)
+      WarehouseIncoming.aggregate([
         { $unwind: "$serialNumberEntries" },
         { $match: { "serialNumberEntries.status": "available" } },
         { $count: "total" },
@@ -67,7 +104,9 @@ export const getDashboardAnalytics = catchAsync(
 
     const totalSalesCount = totalSales.length;
 
-    const itemsInStock = inStockResult.length > 0 ? inStockResult[0].total : 0;
+    const shopStock = inStockResult.length > 0 ? inStockResult[0].total : 0;
+    const warehouseStock = warehouseStockResult.length > 0 ? warehouseStockResult[0].total : 0;
+    const itemsInStock = shopStock + warehouseStock;
     const lowStockCount = lowStockResult.length > 0 ? lowStockResult[0].total : 0;
 
     // Build a full 6-month array, filling gaps with 0

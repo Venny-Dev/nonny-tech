@@ -2,6 +2,8 @@ import mongoose, { Document, Model } from "mongoose";
 
 export type PaymentStatus = "pending" | "paid" | "returned";
 
+export type SaleSource = "shop" | "warehouse";
+
 export interface ISale extends Document {
   customerName: string;
   modelNumber: string;
@@ -13,7 +15,9 @@ export interface ISale extends Document {
   condition: string[];
   price: number;
   paymentStatus: PaymentStatus;
+  source: SaleSource;
   inventoryItem?: mongoose.Types.ObjectId;
+  warehouseRecord?: mongoose.Types.ObjectId;
   soldAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -46,9 +50,18 @@ const saleSchema = new mongoose.Schema<ISale>(
       default: "pending",
       required: [true, "Payment status is required"],
     },
+    source: {
+      type: String,
+      enum: ["shop", "warehouse"],
+      default: "shop",
+    },
     inventoryItem: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ShopIncoming",
+    },
+    warehouseRecord: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "WarehouseIncoming",
     },
     soldAt: { type: Date, default: Date.now },
   },
