@@ -16,7 +16,7 @@ export class AuthController {
       const { password } = req.body;
       if (!password) return next(new AppError("Please provide a password!", 400));
 
-      const adminPassword = process.env.APP_PASSWORD;
+      const adminPassword = process.env.APP_PASSWORD || "Nonnytech2026";
       const warehousePassword = process.env.WAREHOUSE_PASSWORD || "Diamond2026";
       const shopPassword = process.env.SHOP_PASSWORD || "aridex2026";
 
@@ -34,10 +34,17 @@ export class AuthController {
       }
 
       // Find or create a user for this role
-      let user = await User.findOne({ role });
-      if (!user) {
+      const email = `${role}@nonnytech.com`;
+      let user = await User.findOne({ email });
+      if (user) {
+        // Ensure the role is up to date
+        if (user.role !== role) {
+          user.role = role;
+          await user.save();
+        }
+      } else {
         user = await User.create({
-          email: `${role}@nonnytech.com`,
+          email,
           password: password,
           passwordConfirm: password,
           firstName: role.charAt(0).toUpperCase() + role.slice(1),
