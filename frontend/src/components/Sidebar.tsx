@@ -6,7 +6,7 @@ import { Icon } from './ui/Icon'
 import { Button } from './ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog'
 import { usePendingTransferCount } from '../hooks/useTransfers'
-import { usePendingStockRequestCount, useRespondedStockRequestCount } from '../hooks/useStockRequests'
+import { usePendingStockRequestCount } from '../hooks/useStockRequests'
 import type { UserRole } from '../services/authService'
 
 interface NavItem {

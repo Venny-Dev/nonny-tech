@@ -4,7 +4,7 @@ export interface ISerialNumberEntry {
   _id: string
   serialNumber: string
   condition: string[]
-  status: 'available' | 'sold'
+  status: 'available' | 'sold' | 'transferred'
   dateSold: string | null
 }
 

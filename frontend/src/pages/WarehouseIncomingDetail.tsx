@@ -100,12 +100,10 @@ function ReturnHistoryBadge({ history }: { history: { reason: string; returnedAt
 
 function EntryRow({
   entry,
-  recordId,
   onEdit,
   onDelete,
 }: {
   entry: WarehouseSerialNumberEntry
-  recordId: string
   onEdit: (entry: WarehouseSerialNumberEntry) => void
   onDelete: (entry: WarehouseSerialNumberEntry) => void
 }) {
@@ -234,7 +232,7 @@ export default function WarehouseIncomingDetail() {
 
     updateEntry(
       {
-        recordId: record._id,
+        recordId: record!._id,
         serialNumber: editingEntry.serialNumber,
         data: {
           serialNumber: editSerialNumber.trim() || undefined,
@@ -264,7 +262,7 @@ export default function WarehouseIncomingDetail() {
   function handleDeleteConfirm() {
     if (!deletingEntry) return
     deleteEntry(
-      { recordId: record._id, serialNumber: deletingEntry.serialNumber },
+      { recordId: record!._id, serialNumber: deletingEntry.serialNumber },
       {
         onSuccess: () => {
           toast.success(`Entry ${deletingEntry.serialNumber} deleted`)
@@ -448,7 +446,6 @@ export default function WarehouseIncomingDetail() {
                   <EntryRow
                     key={entry._id}
                     entry={entry}
-                    recordId={record._id}
                     onEdit={openEdit}
                     onDelete={openDelete}
                   />
@@ -467,7 +464,6 @@ export default function WarehouseIncomingDetail() {
                       <EntryRow
                         key={entry._id}
                         entry={entry}
-                        recordId={record._id}
                         onEdit={openEdit}
                         onDelete={openDelete}
                       />
@@ -488,7 +484,6 @@ export default function WarehouseIncomingDetail() {
                       <EntryRow
                         key={entry._id}
                         entry={entry}
-                        recordId={record._id}
                         onEdit={openEdit}
                         onDelete={openDelete}
                       />

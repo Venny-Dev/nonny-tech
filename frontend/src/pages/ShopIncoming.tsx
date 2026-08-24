@@ -438,11 +438,18 @@ function ConditionDisplay({ condition }: { condition: string[] }) {
   )
 }
 
-function StatusBadge({ status }: { status: 'available' | 'sold' }) {
+function StatusBadge({ status }: { status: 'available' | 'sold' | 'transferred' }) {
   if (status === 'available') {
     return (
       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
         Available
+      </span>
+    )
+  }
+  if (status === 'transferred') {
+    return (
+      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-50 text-violet-700">
+        Returned to Warehouse
       </span>
     )
   }

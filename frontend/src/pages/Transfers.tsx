@@ -95,7 +95,6 @@ function TransferRow({
   onAction: (id: string, action: 'approve' | 'reject' | 'cancel') => void
   role?: string
 }) {
-  const record = typeof transfer.warehouseRecordId === 'string' ? null : transfer.warehouseRecordId
   const warehouseRecord = typeof transfer.warehouseRecordId === 'string' ? null : transfer.warehouseRecordId
   const shopRecord = typeof transfer.shopRecordId === 'string' ? null : transfer.shopRecordId
   const sourceRecord = warehouseRecord ?? shopRecord
